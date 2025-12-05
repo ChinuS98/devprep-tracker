@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Question } from '../models/question.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class QuestionService {
-  private apiUrl = 'http://localhost:5000/api/questions';
+
+  private apiUrl = `${environment.apiBaseUrl}/questions`;
 
   constructor(private http: HttpClient) {}
 
@@ -17,11 +19,13 @@ export class QuestionService {
     search?: string;
     category?: string;
   }): Observable<Question[]> {
+
     let params = new HttpParams();
     if (filters?.topic) params = params.set('topic', filters.topic);
     if (filters?.status) params = params.set('status', filters.status);
     if (filters?.search) params = params.set('search', filters.search);
     if (filters?.category) params = params.set('category', filters.category);
+
     return this.http.get<Question[]>(this.apiUrl, { params });
   }
 
