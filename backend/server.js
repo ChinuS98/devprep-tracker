@@ -1,39 +1,50 @@
-// server.js (or index.js)
-require('dotenv').config();
+// backend/server.js
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const app = express();
+
+// parse JSON bodies
 app.use(express.json());
-app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 
-const mongoUri = process.env.MONGODB_URI;
+// CORS - allow Vercel + Render domains (use CLIENT_URL environment variable)
+app.use(cors({
+  origin: process.env.CLIENT_URL || '*'
+}));
+
+// connect to MongoDB
+const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI || process.env.DATABASE_URL;
 if (!mongoUri) {
-  console.error('MONGODB_URI not set');
-  process.exit(1);
+  console.error('MONGODB_URI not set in environment variables');
+} else {
+  mongoose.connect(mongoUri, {
+    // modern options not required for latest mongoose, leaving defaults
+  })
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => {
+    console.error('MongoDB connection error:', err.message || err);
+  });
 }
 
-async function start() {
-  try {
-    // Mongoose 6+ no longer needs useNewUrlParser/useUnifiedTopology options,
-    // but you can still pass modern options if you want (example below).
-    await mongoose.connect(mongoUri, {
-      // Optional modern options you can include if you need:
-      // serverSelectionTimeoutMS: 5000,
-      // family: 4 // use IPv4, sometimes helpful in some networks
-    });
+// load routes
+const questionRoutes = require('./routes/questions'); // ensure path correct
+app.use('/api/questions', questionRoutes);
 
-    console.log('✅ MongoDB connected');
+// optional health / root route
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
 
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-  } catch (err) {
-    console.error('MongoDB connection error:', err);
-    process.exit(1);
-  }
-}
+// error handler (basic)
+app.use((err, req, res, next) => {
+  console.error(err && err.stack ? err.stack : err);
+  res.status(err.status || 500).json({ error: err.message || 'Server error' });
+});
 
-start();
-
-// your routes here...
+// start server (Render provides PORT in env)
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+});
