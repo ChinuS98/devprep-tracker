@@ -1,37 +1,46 @@
-// backend/routes/questions.js
-const express = require('express');
-const router = express.Router();
+// backend/models/Question.js
 const mongoose = require('mongoose');
 
-const questionSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  options: [String],
-  answer: String,
-  tags: [String],
-  topic: String,
-  createdAt: { type: Date, default: Date.now }
-});
-const Question = mongoose.models.Question || mongoose.model('Question', questionSchema);
+const questionSchema = new mongoose.Schema(
+  {
+    topic: { type: String, required: true },       // e.g., DSA, JS, Angular
+    questionText: { type: String, required: true },
 
-// list
-router.get('/', async (req,res) => {
-  try {
-    const filter = {};
-    if (req.query.topic) filter.topic = req.query.topic;
-    if (req.query.search) {
-      const q = req.query.search;
-      filter.$or = [{ title: new RegExp(q,'i') }, { description: new RegExp(q,'i') }, { tags: new RegExp(q,'i') }];
-    }
-    const questions = await Question.find(filter).sort({ createdAt: -1 }).limit(200);
-    res.json(questions);
-  } catch (err) { res.status(500).json({error: err.message}); }
-});
+    type: {
+      type: String,
+      enum: ['subjective', 'mcq'],
+      default: 'subjective'
+    },
 
-// add
-router.post('/', async (req,res) => {
-  try { const q = new Question(req.body); await q.save(); res.status(201).json(q); }
-  catch (err) { res.status(400).json({error: err.message}); }
-});
+    // subjective answer
+    answer: { type: String },
 
-module.exports = router;
+    // MCQ fields
+    options: [{ type: String }],
+    correctOptionIndex: { type: Number },
+
+    difficulty: {
+      type: String,
+      enum: ['Easy', 'Medium', 'Hard'],
+      default: 'Easy'
+    },
+    status: {
+      type: String,
+      enum: ['To Learn', 'In Progress', 'Mastered'],
+      default: 'To Learn'
+    },
+
+    category: { type: String },        // JavaScript, Angular, HTML/CSS, etc.
+    tags: [{ type: String }],
+
+    resourceLink: { type: String },
+    sourceType: { type: String },
+    uiPattern: { type: String },
+    figmaUrl: { type: String },
+
+    lastReviewedAt: { type: Date }
+  },
+  { timestamps: true }
+);
+
+module.exports = mongoose.model('Question', questionSchema);
