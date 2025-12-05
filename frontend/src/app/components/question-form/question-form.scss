@@ -1,0 +1,63 @@
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.field label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #4b5563;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border-radius: 0.7rem;
+  border: 1px solid #d1d5db;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  background: #f9fafb;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.field textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.18);
+  background: #ffffff;
+}
+
+.mcq-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.mcq-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.mcq-row input[type='text'],
+.mcq-row input:not([type='radio']) {
+  flex: 1;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.75rem;
+}

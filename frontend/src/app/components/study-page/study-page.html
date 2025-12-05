@@ -1,0 +1,104 @@
+<div class="page-grid">
+  <aside class="sidebar-card">
+    <h2>Study Filters</h2>
+
+    <div class="field">
+      <label>Search</label>
+      <input
+        [(ngModel)]="searchText"
+        (ngModelChange)="applyFilters()"
+        placeholder="Search topic / question / tag"
+      />
+    </div>
+
+    <div class="field">
+      <label>Technology / Language</label>
+      <select [(ngModel)]="selectedCategory" (change)="applyFilters()">
+        <option value="">All</option>
+        <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Difficulty</label>
+      <select [(ngModel)]="selectedDifficulty" (change)="applyFilters()">
+        <option value="">All</option>
+        <option *ngFor="let d of difficulties" [value]="d">{{ d }}</option>
+      </select>
+    </div>
+
+    <button type="button" class="primary-outline" (click)="clearFilters()">
+      Clear Filters
+    </button>
+  </aside>
+
+  <section class="content-column">
+    <div class="page-header">
+      <div>
+        <h2>Study Mode</h2>
+        <p>Browse curated interview questions with answers and explanations.</p>
+      </div>
+      <span class="pill">
+        {{ filtered.length }} question{{ filtered.length === 1 ? '' : 's' }}
+      </span>
+    </div>
+
+    <div *ngIf="loading" class="info-banner">Loading questions…</div>
+    <div *ngIf="error" class="error-banner">{{ error }}</div>
+
+    <p *ngIf="!loading && !filtered.length" class="muted">
+      No questions found. Try changing filters or add more questions from the Admin section.
+    </p>
+
+    <div class="card-list">
+      <article *ngFor="let q of filtered" class="question-card">
+        <div class="card-top">
+          <div class="chips">
+            <span class="chip chip-topic">{{ q.topic }}</span>
+            <span class="chip" *ngIf="q.category">{{ q.category }}</span>
+            <span class="chip chip-difficulty">{{ q.difficulty }}</span>
+            <span class="chip chip-status">{{ q.status }}</span>
+          </div>
+        </div>
+
+        <h3 class="question-text">{{ q.questionText }}</h3>
+
+        <div *ngIf="q.type === 'subjective' && q.answer" class="section">
+          <h4>Explanation</h4>
+          <p>{{ q.answer }}</p>
+        </div>
+
+        <div *ngIf="q.type === 'mcq'" class="section">
+          <h4>MCQ Options</h4>
+          <ol class="options-list">
+            <li *ngFor="let opt of q.options; let i = index">
+              <span class="pill tiny">{{ i + 1 }}</span>
+              <span>{{ opt }}</span>
+            </li>
+          </ol>
+          <p *ngIf="q.correctOptionIndex !== undefined" class="muted">
+            Correct:&nbsp;
+            <strong>{{ q.options[q.correctOptionIndex || 0] }}</strong>
+          </p>
+          <p *ngIf="q.answer">
+            <strong>Explanation:</strong> {{ q.answer }}
+          </p>
+        </div>
+
+        <div *ngIf="q.tags?.length" class="section tags">
+          <h4>Tags</h4>
+          <div class="tag-list">
+            <span *ngFor="let t of q.tags" class="tag-chip">{{ t }}</span>
+          </div>
+        </div>
+
+        <div class="meta-row" *ngIf="q.resourceLink || q.sourceType">
+          <a *ngIf="q.resourceLink" [href]="q.resourceLink" target="_blank">
+            Reference
+          </a>
+          <span *ngIf="q.sourceType">Source: {{ q.sourceType }}</span>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,107 @@
+<form (ngSubmit)="onSubmit()" class="form-card">
+  <div>
+    <label>Topic</label>
+    <input [(ngModel)]="form.topic" name="topic" required />
+  </div>
+
+  <div>
+    <label>Question</label>
+    <textarea [(ngModel)]="form.questionText" name="questionText" required></textarea>
+  </div>
+
+  <div>
+    <label>Type</label>
+    <select [(ngModel)]="form.type" name="type">
+      <option value="subjective">Subjective</option>
+      <option value="mcq">MCQ</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Category</label>
+    <select [(ngModel)]="form.category" name="category">
+      <option>JavaScript</option>
+      <option>Angular</option>
+      <option>HTML/CSS</option>
+      <option>Web Performance</option>
+      <option>SEO</option>
+      <option>DBMS</option>
+      <option>OS</option>
+      <option>System Design</option>
+      <option>HR</option>
+    </select>
+  </div>
+
+  <div *ngIf="form.type === 'subjective'">
+    <label>Answer / Notes</label>
+    <textarea [(ngModel)]="form.answer" name="answer"></textarea>
+  </div>
+
+  <div *ngIf="form.type === 'mcq'">
+    <label>Options</label>
+    <div *ngFor="let opt of form.options; let i = index" class="option-container">
+      <input [(ngModel)]="form.options[i]" name="option{{ i }}" placeholder="Option {{ i + 1 }}" />
+      <input
+        type="radio"
+        name="correctOption"
+        [value]="i"
+        [(ngModel)]="form.correctOptionIndex"
+      />
+      Correct
+    </div>
+    <small>Use this for JS/Angular MCQs</small>
+  </div>
+
+  <div>
+    <label>Difficulty</label>
+    <select [(ngModel)]="form.difficulty" name="difficulty">
+      <option>Easy</option>
+      <option>Medium</option>
+      <option>Hard</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Status</label>
+    <select [(ngModel)]="form.status" name="status">
+      <option>To Learn</option>
+      <option>In Progress</option>
+      <option>Mastered</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Tags (comma separated)</label>
+    <input [(ngModel)]="tagsInput" name="tags" placeholder="Angular, TypeScript, RxJS" />
+  </div>
+
+  <div>
+    <label>Resource Link</label>
+    <input [(ngModel)]="form.resourceLink" name="resourceLink" placeholder="https://example.com" />
+  </div>
+
+  <div>
+    <label>Source Type</label>
+    <select [(ngModel)]="form.sourceType" name="sourceType">
+      <option value="">Select</option>
+      <option>Blog</option>
+      <option>YouTube</option>
+      <option>Course</option>
+      <option>Own Experience</option>
+    </select>
+  </div>
+
+  <div>
+    <label>UI Pattern</label>
+    <input [(ngModel)]="form.uiPattern" name="uiPattern" placeholder="Table, Form, Dashboard..." />
+  </div>
+
+  <div>
+    <label>Figma URL</label>
+    <input [(ngModel)]="form.figmaUrl" name="figmaUrl" placeholder="https://figma.com/..." />
+  </div>
+
+  <button type="submit">
+    {{ initialData ? 'Update Question' : 'Add Question' }}
+  </button>
+</form>

@@ -1,0 +1,120 @@
+<div class="page-grid">
+  <aside class="sidebar-card">
+    <h2>Admin Filters</h2>
+
+    <div class="field">
+      <label>Search</label>
+      <input
+        [(ngModel)]="searchText"
+        (ngModelChange)="applyFilters()"
+        placeholder="Search text or tag"
+      />
+    </div>
+
+    <div class="field">
+      <label>Topic</label>
+      <select [(ngModel)]="filterTopic" (change)="applyFilters()">
+        <option value="">All Topics</option>
+        <option>DSA</option>
+        <option>JavaScript</option>
+        <option>Angular</option>
+        <option>HTML/CSS</option>
+        <option>DBMS</option>
+        <option>OS</option>
+        <option>System Design</option>
+        <option>HR</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Category</label>
+      <select [(ngModel)]="filterCategory" (change)="applyFilters()">
+        <option value="">All Categories</option>
+        <option>JavaScript</option>
+        <option>Angular</option>
+        <option>HTML/CSS</option>
+        <option>Web Performance</option>
+        <option>SEO</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Status</label>
+      <select [(ngModel)]="filterStatus" (change)="applyFilters()">
+        <option value="">All Status</option>
+        <option>To Learn</option>
+        <option>In Progress</option>
+        <option>Mastered</option>
+      </select>
+    </div>
+  </aside>
+
+  <section class="content-column">
+    <div class="page-header">
+      <div>
+        <h2>Admin – Question Bank</h2>
+        <p>Manage questions that power Study and MCQ Test sections.</p>
+      </div>
+      <span class="pill">
+        {{ questions.length }} total
+      </span>
+    </div>
+
+    <div class="admin-grid">
+      <div class="admin-form-card">
+        <h3>{{ selectedQuestion ? 'Edit Question' : 'Add Question' }}</h3>
+        <app-question-form
+          [initialData]="selectedQuestion"
+          (saved)="selectedQuestion ? onUpdate($event) : onCreate($event)">
+        </app-question-form>
+
+        <button *ngIf="selectedQuestion" class="secondary-button" (click)="clearEdit()">
+          Cancel Edit
+        </button>
+      </div>
+
+      <div class="admin-table-card">
+        <div *ngIf="loading" class="info-banner">Loading questions…</div>
+        <div *ngIf="error" class="error-banner">{{ error }}</div>
+
+        <div class="table-wrapper" *ngIf="!loading && questions.length">
+          <table>
+            <thead>
+              <tr>
+                <th>Topic</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Question</th>
+                <th>Difficulty</th>
+                <th>Status</th>
+                <th>Tags</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let q of questions">
+                <td>{{ q.topic }}</td>
+                <td>{{ q.category }}</td>
+                <td>{{ q.type }}</td>
+                <td class="cell-question">{{ q.questionText }}</td>
+                <td>{{ q.difficulty }}</td>
+                <td>{{ q.status }}</td>
+                <td>{{ formatTags(q) }}</td>
+                <td class="cell-actions">
+                  <button class="link-btn" (click)="editQuestion(q)">Edit</button>
+                  <button class="link-btn danger" (click)="deleteQuestion(q._id)">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p *ngIf="!loading && !questions.length" class="muted">
+          No questions yet. Add your first one using the form.
+        </p>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,31 @@
+<div class="login-shell">
+  <div class="login-card">
+    <h2>Admin Login</h2>
+    <p class="muted">
+      Login to manage interview questions. Study and MCQ Test are public.
+    </p>
+
+    <div *ngIf="error" class="error-banner">
+      {{ error }}
+    </div>
+
+    <div class="field">
+      <label>Username</label>
+      <input [(ngModel)]="username" />
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input type="password" [(ngModel)]="password" />
+    </div>
+
+    <label class="remember-row">
+      <input type="checkbox" [(ngModel)]="rememberMe" />
+      <span>Remember me on this device</span>
+    </label>
+
+    <button class="primary-button" (click)="login()">
+      Login
+    </button>
+  </div>
+</div>

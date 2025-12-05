@@ -1,0 +1,57 @@
+<div class="app-shell">
+  <header class="app-header">
+    <div class="brand">
+      <div class="logo-circle">DP</div>
+      <div class="titles">
+        <h1>DevPrep Tracker</h1>
+        <p class="subtitle">Interview preparation hub for frontend & JS</p>
+      </div>
+    </div>
+
+    <button class="hamburger" aria-label="Toggle menu" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen">
+      <span class="bar" [class.open]="menuOpen"></span>
+      <span class="bar" [class.open]="menuOpen"></span>
+      <span class="bar" [class.open]="menuOpen"></span>
+    </button>
+
+    <nav class="nav-tabs" [class.open]="menuOpen" (click)="$event.stopPropagation()">
+      <a routerLink="/study" routerLinkActive="active" (click)="closeMenu()">Study</a>
+      <a routerLink="/test" routerLinkActive="active" (click)="closeMenu()">MCQ Test</a>
+
+      <a
+        *ngIf="auth.isAdmin()"
+        routerLink="/questions"
+        routerLinkActive="active"
+        (click)="closeMenu()">
+        Admin
+      </a>
+
+      <a
+        *ngIf="!auth.isLoggedIn()"
+        routerLink="/login"
+        routerLinkActive="active"
+        (click)="closeMenu()">
+        Admin Login
+      </a>
+
+      <button
+        *ngIf="auth.isLoggedIn()"
+        type="button"
+        class="logout-btn"
+        (click)="logout()">
+        Logout ({{ auth.getUsername() || 'Admin' }})
+      </button>
+    </nav>
+  </header>
+
+  <!-- overlay for mobile when menu open -->
+  <div class="menu-overlay" *ngIf="menuOpen" (click)="closeMenu()"></div>
+
+  <main class="app-main" (click)="closeMenu()">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="app-footer">
+    <small>Built for MCA Interview Prep • MEAN / Angular • JS / UI / UX</small>
+  </footer>
+</div>

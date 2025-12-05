@@ -1,0 +1,106 @@
+<div class="page-grid">
+  <aside class="sidebar-card">
+    <h2>MCQ Test Setup</h2>
+
+    <div class="field">
+      <label>Technology / Language</label>
+      <select [(ngModel)]="selectedCategory">
+        <option *ngFor="let c of categories" [value]="c">
+          {{ c }}
+        </option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Number of questions</label>
+      <select [(ngModel)]="questionCount">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="20">20</option>
+      </select>
+    </div>
+
+    <button type="button" class="primary-button" (click)="startTest()">
+      Start Test
+    </button>
+
+    <div *ngIf="error" class="error-banner">
+      {{ error }}
+    </div>
+  </aside>
+
+  <section class="content-column">
+    <div class="page-header">
+      <div>
+        <h2>MCQ Test</h2>
+        <p>Practice timed-style questions by topic and difficulty.</p>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="info-banner">Loading questions…</div>
+
+    <div *ngIf="testStarted && !testSubmitted && !loading">
+      <p class="muted">
+        Category: <strong>{{ selectedCategory }}</strong> •
+        Questions: <strong>{{ testQuestions.length }}</strong>
+      </p>
+
+      <ol class="test-list">
+        <li *ngFor="let q of testQuestions; let qi = index" class="test-card">
+          <h3>{{ qi + 1 }}. {{ q.questionText }}</h3>
+          <ul class="answer-list">
+            <li
+              *ngFor="let opt of q.options; let oi = index"
+              [class.selected]="userAnswers[qi] === oi"
+              (click)="selectAnswer(qi, oi)"
+            >
+              <span class="pill tiny">{{ getOptionLabel(oi) }}</span>
+              <span>{{ opt }}</span>
+            </li>
+          </ul>
+        </li>
+      </ol>
+
+      <button type="button" class="primary-button" (click)="submitTest()">
+        Submit Test
+      </button>
+    </div>
+
+    <div *ngIf="testSubmitted" class="results-block">
+      <h2>Result</h2>
+      <p class="score-text">
+        Score:
+        <span>{{ score }}</span> / {{ testQuestions.length }}
+      </p>
+
+      <h3>Review</h3>
+      <ol class="review-list">
+        <li *ngFor="let q of testQuestions; let qi = index">
+          <p class="review-question">
+            {{ qi + 1 }}. {{ q.questionText }}
+          </p>
+          <p>
+            Your answer:
+            <span *ngIf="userAnswers[qi] !== null && userAnswers[qi] !== undefined">
+              {{ q.options[userAnswers[qi]!] }}
+            </span>
+            <span *ngIf="userAnswers[qi] === null || userAnswers[qi] === undefined">
+              Not answered
+            </span>
+          </p>
+          <p *ngIf="q.correctOptionIndex !== undefined">
+            Correct answer: <strong>{{ q.options[q.correctOptionIndex] }}</strong>
+          </p>
+          <p *ngIf="q.answer">
+            Explanation: {{ q.answer }}
+          </p>
+          <hr />
+        </li>
+      </ol>
+
+      <button type="button" class="secondary-button" (click)="resetTest()">
+        Start New Test
+      </button>
+    </div>
+  </section>
+</div>
