@@ -1,29 +1,39 @@
-// backend/server.js
-const express = require('express');
-const cors = require('cors');
-const mongoose = require('mongoose');
+// server.js (or index.js)
 require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: process.env.CLIENT_URL || '*' }));
 
-const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI || process.env.DATABASE_URL;
-if (mongoUri) {
-  mongoose.connect(mongoUri).then(()=>console.log('MongoDB connected')).catch(err=>console.error('MongoDB error', err.message));
-} else {
+const mongoUri = process.env.MONGODB_URI;
+if (!mongoUri) {
   console.error('MONGODB_URI not set');
+  process.exit(1);
 }
 
-// load router
-const questionRoutes = require('./routes/questions');    // ensure file exists
-app.use('/api/questions', questionRoutes);
+async function start() {
+  try {
+    // Mongoose 6+ no longer needs useNewUrlParser/useUnifiedTopology options,
+    // but you can still pass modern options if you want (example below).
+    await mongoose.connect(mongoUri, {
+      // Optional modern options you can include if you need:
+      // serverSelectionTimeoutMS: 5000,
+      // family: 4 // use IPv4, sometimes helpful in some networks
+    });
 
-// optional root
-app.get('/', (req,res) => res.send('API is running'));
+    console.log('✅ MongoDB connected');
 
-// error handler
-app.use((err, req, res, next) => { console.error(err); res.status(500).json({error: err.message||'Server error'}); });
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  }
+}
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, ()=>console.log(`Server started on port ${PORT}`));
+start();
+
+// your routes here...
