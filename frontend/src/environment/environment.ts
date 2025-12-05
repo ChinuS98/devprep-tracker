@@ -1,4 +1,5 @@
+// frontend/src/environments/environment.ts
 export const environment = {
-  production: true,
-  apiBaseUrl: 'https://devprep-tracker.onrender.com/api'
+  production: false,
+  apiBaseUrl: 'http://localhost:5000/api'
 };
